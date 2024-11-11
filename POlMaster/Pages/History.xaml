@@ -1,0 +1,16 @@
+﻿<Page x:Class="POlMaster.Pages.History"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:POlMaster.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ИС Мастер Пол - истории реализации продукции партнером">
+    <Grid>
+        <Button x:Name="BackButton" Grid.Row="1" 
+                Content="Назад" HorizontalAlignment="Center"
+                Click="BackButton_Click"></Button>
+
+    </Grid>
+</Page>

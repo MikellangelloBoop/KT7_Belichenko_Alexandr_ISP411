@@ -21,41 +21,79 @@ namespace POlMaster.Pages
     /// </summary>
     public partial class AddEdit : Page
     {
-        private PartnersImport _currentpartner;
-        private bool FlagAddorEdit;
+        public string FlagAddorEdit = "default";
+        public Data.PartnersImport _currentpartner = new Data.PartnersImport();
 
         public AddEdit(PartnersImport partner)
         {
             InitializeComponent();
 
-        _currentpartner = partner;
-            FlagAddorEdit = _currentpartner == null;
+            if (partner != null)
+            {
+                _currentpartner = partner;
+                FlagAddorEdit = "edit";
+            }
+            else
+            {
+                FlagAddorEdit = "add";
+            }
+            DataContext = _currentpartner;
+
+
             Init();
         }
 
         public void Init()
-        {
-            IdTextBox.Visibility = Visibility.Hidden;
-            IdLabel.Visibility = Visibility.Hidden;
-            TypeComboBox.ItemsSource = Data.MasterPolEntities.GetContext().TypeOfPartner.ToList();
-
-            if (_currentpartner != null)
+        { 
+       try
             {
-                NameTextBox.Text = _currentpartner.PartnerName.Name;
-                RatingTextBox.Text = _currentpartner.Reiting.ToString();
-                RegionTextBox.Text = _currentpartner.Adress.Regions.RegionOf;
-                CityTextBox.Text = _currentpartner.Adress.Cities.CityOf.ToString();
-                StreetTextBox.Text = _currentpartner.Adress.Streets.StreetOf.ToString();
-                HouseNumTextBox.Text = _currentpartner.Adress.HouseNum.ToString();
-                IndexTextBox.Text = _currentpartner.Adress.Indexes.IndexOf.ToString();
-                FIOTextBox.Text = _currentpartner.Directors.FIO;
-                PhoneTextBox.Text = _currentpartner.PhoneOfPartner;
-                EmailTextBox.Text = _currentpartner.EmailOfPartner;
-                IdTextBox.Text = _currentpartner.Id.ToString();
-                TypeComboBox.SelectedItem = Data.MasterPolEntities.GetContext().TypeOfPartner
-                    .FirstOrDefault(d => d.Id == _currentpartner.IdTypeOfParther);
+                TypeComboBox.ItemsSource = Data.MasterPolEntities.GetContext().TypeOfPartner.ToList();
+                if (FlagAddorEdit == "add")
+                {
+                    IdTextBox.Visibility = Visibility.Hidden;
+                    IdLabel.Visibility = Visibility.Hidden;
+
+                    NameTextBox.Text = string.Empty;
+                    RatingTextBox.Text = string.Empty;
+                    RegionTextBox.Text = string.Empty;
+                    CityTextBox.Text = string.Empty;
+                    StreetTextBox.Text = string.Empty;
+                    HouseNumTextBox.Text = string.Empty;
+                    IndexTextBox.Text = string.Empty;
+                    FIOTextBox.Text = string.Empty;
+                    PhoneTextBox.Text = string.Empty;
+                    EmailTextBox.Text = string.Empty;
+                    
+                    IdTextBox.Text = Data.MasterPolEntities.GetContext().PartnersImport.Max(d => d.Id + 1).ToString();
+    }
+
+                else if (FlagAddorEdit == "edit")
+                {
+                    IdTextBox.Visibility = Visibility.Hidden;
+                    IdLabel.Visibility = Visibility.Hidden;
+
+                    NameTextBox.Text = _currentpartner.PartnerName.Name;
+                    RatingTextBox.Text = _currentpartner.Reiting.ToString();
+                    RegionTextBox.Text = _currentpartner.Adress.Regions.RegionOf;
+                    CityTextBox.Text = _currentpartner.Adress.Cities.CityOf.ToString();
+                    StreetTextBox.Text = _currentpartner.Adress.Streets.StreetOf.ToString();
+                    HouseNumTextBox.Text = _currentpartner.Adress.HouseNum.ToString();
+                    IndexTextBox.Text = _currentpartner.Adress.Indexes.IndexOf.ToString();
+                    FIOTextBox.Text = _currentpartner.Directors.FIO;
+                    PhoneTextBox.Text = _currentpartner.PhoneOfPartner;
+                    EmailTextBox.Text = _currentpartner.EmailOfPartner;
+
+                     TypeComboBox.SelectedItem = Data.MasterPolEntities.GetContext().TypeOfPartner.Where(d => d.Id == _currentpartner.IdTypeOfParther).FirstOrDefault();
+                   
+                  
+                }
             }
+            catch (Exception)
+            {
+
+}
         }
+
 
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -75,6 +113,10 @@ namespace POlMaster.Pages
                 if (TypeComboBox.SelectedItem == null)
                 {
                     errors.AppendLine("Выберите тип партнера!");
+                }
+                if (string.IsNullOrEmpty(RatingTextBox.Text) || !int.TryParse(RatingTextBox.Text, out int rating) || rating < 0)
+                {
+                    errors.AppendLine("Рейтинг должен быть целым неотрицательным числом!");
                 }
                 if (string.IsNullOrEmpty(RatingTextBox.Text))
                 {
@@ -96,9 +138,17 @@ namespace POlMaster.Pages
                 {
                     errors.AppendLine("Заполните номер дома!");
                 }
+                if (!int.TryParse(HouseNumTextBox.Text, out int House) || House <0)
+                {
+                    errors.AppendLine("Заполните нормальный номер дома цифрами!");
+                }
                 if (string.IsNullOrEmpty(IndexTextBox.Text))
                 {
                     errors.AppendLine("Заполните индекс!");
+                }
+                if (!int.TryParse(IndexTextBox.Text, out int Ind) || Ind < 0)
+                {
+                    errors.AppendLine("Заполните индекс цифрами!");
                 }
                 if (string.IsNullOrEmpty(FIOTextBox.Text))
                 {
@@ -126,86 +176,124 @@ namespace POlMaster.Pages
                     return;
                 }
 
-                if (!FlagAddorEdit)
+                _currentpartner.IdTypeOfParther = selectedCategory.Id;
+                _currentpartner.Reiting = Convert.ToInt32(RatingTextBox.Text);
+                _currentpartner.PhoneOfPartner = PhoneTextBox.Text;
+                _currentpartner.EmailOfPartner = EmailTextBox.Text;
+
+
+                var searchDirector = (from item in Data.MasterPolEntities.GetContext().Directors
+                                      where item.FIO == FIOTextBox.Text
+                                      select item).FirstOrDefault();
+                if (searchDirector != null)
                 {
-                    _currentpartner.IdTypeOfParther = selectedCategory.Id;
-                    _currentpartner.Reiting = Convert.ToInt32(RatingTextBox.Text);
-                    _currentpartner.PhoneOfPartner = PhoneTextBox.Text;
-                    _currentpartner.EmailOfPartner = EmailTextBox.Text;
-
-                    var searchDirector = (from item in Data.MasterPolEntities.GetContext().Directors
-                                          where item.Id == _currentpartner.IdDirector
-                                          select item).FirstOrDefault();
-                    if (searchDirector != null)
-                    {
-                        searchDirector.FIO = FIOTextBox.Text;
-                    }
-
-                    var searchPartnerName = (from item in Data.MasterPolEntities.GetContext().PartnerName
-                                             where item.Id == _currentpartner.IdPartnerName
-                                             select item).FirstOrDefault();
-                    if (searchPartnerName != null)
-                    {
-                        searchPartnerName.Name = NameTextBox.Text;
-                    }
-
-                    MessageBox.Show("Успешно изменено!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _currentpartner.IdDirector = searchDirector.Id;
                 }
                 else
                 {
-                    var newPartner = new Data.PartnersImport
+                    Data.Directors directors = new Data.Directors()
                     {
-                        IdTypeOfParther = selectedCategory.Id,
-                        Reiting = Convert.ToInt32(RatingTextBox.Text),
-                        PhoneOfPartner = PhoneTextBox.Text,
-                        EmailOfPartner = EmailTextBox.Text,
-                        
+                        FIO = FIOTextBox.Text
                     };
-
-                    
-
-                    var searchDirector = (from item in Data.MasterPolEntities.GetContext().Directors
-                                          where item.FIO == FIOTextBox.Text
-                                          select item).FirstOrDefault();
-                    if (searchDirector != null)
-                    {
-                        newPartner.IdDirector = searchDirector.Id;
-                    }
-                    else
-                    {
-                        Data.Directors directors = new Data.Directors()
-                        {
-                            FIO = FIOTextBox.Text
-                        };
-                        Data.MasterPolEntities.GetContext().Directors.Add(directors);
-                        Data.MasterPolEntities.GetContext().SaveChanges();
-                        newPartner.IdDirector = directors.Id;
-                    }
-
-                    var searchPartnerName = (from item in Data.MasterPolEntities.GetContext().PartnerName
-                                             where item.Name == NameTextBox.Text
-                                             select item).FirstOrDefault();
-                    if (searchPartnerName != null)
-                    {
-                        newPartner.IdPartnerName = searchPartnerName.Id;
-                    }
-                    else
-                    {
-                        Data.PartnerName partnerName = new Data.PartnerName()
-                        {
-                            Name = NameTextBox.Text
-                        };
-                        Data.MasterPolEntities.GetContext().PartnerName.Add(partnerName);
-                        Data.MasterPolEntities.GetContext().SaveChanges();
-                        newPartner.IdPartnerName = partnerName.Id;
-                    }
-
-                    Data.MasterPolEntities.GetContext().PartnersImport.Add(newPartner);
-                    MessageBox.Show("Успешно добавлено!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Data.MasterPolEntities.GetContext().Directors.Add(directors);
+                    Data.MasterPolEntities.GetContext().SaveChanges();
+                    _currentpartner.IdDirector = directors.Id;
                 }
 
-                Data.MasterPolEntities.GetContext().SaveChanges();
-            }
+                var searchPartnerName = Data.MasterPolEntities.GetContext().PartnerName
+                           .FirstOrDefault(pn => pn.Name == NameTextBox.Text);
+                if (searchPartnerName != null)
+                {
+                    _currentpartner.IdPartnerName = searchPartnerName.Id;
+                }
+                else
+                {
+                    var partnerName = new Data.PartnerName { Name = NameTextBox.Text };
+                    Data.MasterPolEntities.GetContext().PartnerName.Add(partnerName);
+                    Data.MasterPolEntities.GetContext().SaveChanges();
+                    _currentpartner.IdPartnerName = partnerName.Id;
+                }
+
+
+
+
+
+                int houseNum = int.Parse(HouseNumTextBox.Text);
+                int indexOf = int.Parse(IndexTextBox.Text);
+
+                var address = MasterPolEntities.GetContext().Adress
+                    .FirstOrDefault(a => a.Regions.RegionOf == RegionTextBox.Text &&
+                                         a.Cities.CityOf == CityTextBox.Text &&
+                                         a.Streets.StreetOf == StreetTextBox.Text &&
+                                         a.HouseNum == houseNum &&
+                                         a.Indexes.IndexOf == indexOf);
+                if (address == null)
+                {
+                    address = new Adress
+                    {
+                        Regions = new Regions { RegionOf = RegionTextBox.Text },
+                        Cities = new Cities { CityOf = CityTextBox.Text },
+                        Streets = new Streets { StreetOf = StreetTextBox.Text },
+                        HouseNum = houseNum,
+                        Indexes = new Indexes { IndexOf = indexOf }
+                    };
+
+                    MasterPolEntities.GetContext().Adress.Add(address);
+                    MasterPolEntities.GetContext().SaveChanges(); 
+                }
+
+
+                _currentpartner.IdAdress = address.Id;
+
+
+
+                if (address.Id != 0)
+                {
+                    _currentpartner.IdAdress = address.Id;
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка сохранения адреса.", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                if (FlagAddorEdit == "add")
+                {
+                    
+                      Data.MasterPolEntities.GetContext().PartnersImport.Add(_currentpartner);
+                    Data.MasterPolEntities.GetContext().SaveChanges();
+
+                    var productionList = Data.MasterPolEntities.GetContext().Production.ToList();
+                    foreach (var production in productionList)
+                    {
+                        var PProd = new Data.PartnerProductsImport
+                        {
+                            IdPartnerName = _currentpartner.IdPartnerName,
+                            CountOfProduction = 600,
+                            IdProduction = 4,
+                            DateOfSale = DateTime.Today
+                        };
+                        Data.MasterPolEntities.GetContext().PartnerProductsImport.Add(PProd);
+                    }
+
+                  
+                        
+                        MessageBox.Show("Успешно добавлено", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    
+                }
+                else if (FlagAddorEdit == "edit")
+                {
+                    Data.MasterPolEntities.GetContext().SaveChanges();
+                    MessageBox.Show("Успешно сохранено", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                Classes.Manager.MainFrame.Navigate(new Pages.ListView());
+
+
+
+                   
+                }
+
+               
+            
             catch (Exception ex)
             {
                 MessageBox.Show($"Произошла ошибка: {ex.Message}", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Error);

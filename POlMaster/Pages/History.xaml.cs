@@ -20,9 +20,29 @@ namespace POlMaster.Pages
     /// </summary>
     public partial class History : Page
     {
-        public History()
+        private readonly Data.PartnersImport _selectedPartner;
+
+        public History(Data.PartnersImport selectedPartner)
         {
             InitializeComponent();
+            _selectedPartner = selectedPartner;
+
+            LoadHistory();
+        }
+
+        private void LoadHistory()
+        {
+            var history = Data.MasterPolEntities.GetContext().PartnerProductsImport
+                .Where(p => p.IdPartnerName == _selectedPartner.Id)
+                .Select(p => new
+                {
+                    Production = p.Production,
+                    CountOfProduction = p.CountOfProduction,
+                    DateOfSale = p.DateOfSale
+                })
+                .ToList();
+
+            HistoryDataGrid.ItemsSource = history;
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -30,4 +50,5 @@ namespace POlMaster.Pages
             Classes.Manager.MainFrame.Navigate(new Pages.ListView());
         }
     }
+
 }

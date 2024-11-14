@@ -73,7 +73,7 @@
           <Property Name="EmailOfPartner" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="PhoneOfPartner" Type="nvarchar" MaxLength="12" Nullable="false" />
           <Property Name="IdAdress" Type="int" Nullable="false" />
-          <Property Name="INN" Type="bigint" Nullable="false" />
+          <Property Name="INN" Type="bigint" />
           <Property Name="Reiting" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Production">
@@ -450,7 +450,7 @@
           <Property Name="EmailOfPartner" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="PhoneOfPartner" Type="String" MaxLength="12" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="IdAdress" Type="Int32" Nullable="false" />
-          <Property Name="INN" Type="Int64" Nullable="false" />
+          <Property Name="INN" Type="Int64" />
           <Property Name="Reiting" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Adress" Relationship="Self.FK_Partners_import_Adress" FromRole="PartnersImport" ToRole="Adress" />
           <NavigationProperty Name="Directors" Relationship="Self.FK_Partners_import_Directors" FromRole="PartnersImport" ToRole="Directors" />

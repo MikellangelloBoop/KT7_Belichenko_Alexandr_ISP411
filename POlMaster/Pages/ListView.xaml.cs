@@ -27,6 +27,7 @@ namespace POlMaster.Pages
         public ListView()
         {
             InitializeComponent();
+
             LoadData();
         }
 
@@ -45,10 +46,13 @@ namespace POlMaster.Pages
                                     }).ToList();
 
             MasterListView.ItemsSource = partnerDiscounts;
+            MessageBox.Show($"Загружено партнеров: {partners.Count}");
+
         }
 
         private int CalculateDiscount(int totalCount)
         {
+            if (totalCount == 0) return 0;
             if (totalCount < 10000) return 0;
             if (totalCount >= 10000 && totalCount < 50000) return 5;
             if (totalCount >= 50000 && totalCount < 300000) return 10;
@@ -79,7 +83,7 @@ namespace POlMaster.Pages
             if (partnerData != null)
             {
                 var partner = (partnerData as dynamic).Partner;
-                Classes.Manager.MainFrame.Navigate(new History());
+                Classes.Manager.MainFrame.Navigate(new History(partner));
             }
             else
             {

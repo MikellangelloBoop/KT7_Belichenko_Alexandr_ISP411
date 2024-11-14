@@ -30,7 +30,7 @@
 
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock>
-                                <Run Text="{Binding Partner.TypeOfPartner.TypeOfPartner1}"/>
+                                <TextBlock Text ="{Binding Partner.TypeOfPartner.TypeOfPartner1}"/>
                                 <Run Text="|"/>
                                 <Run Text="{Binding Partner.PartnerName.Name}"/>
                             </TextBlock>

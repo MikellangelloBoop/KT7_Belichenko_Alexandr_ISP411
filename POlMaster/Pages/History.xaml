@@ -6,11 +6,32 @@
       xmlns:local="clr-namespace:POlMaster.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ИС Мастер Пол - истории реализации продукции партнером">
+      Title="ИС Мастер Пол - истории реализации продукции партнером"
+      Background="White">
+
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="70"></RowDefinition>
+        </Grid.RowDefinitions>
+        <DataGrid x:Name="HistoryDataGrid" Grid.Row="0" 
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Наименование" 
+                    Binding="{Binding Production.NameOfProduction}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Количество продукции"
+                    Binding="{Binding CountOfProduction}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Дата продажи"
+                    Binding="{Binding DateOfSale, StringFormat='{}{0:yyyy-MM-dd}'}"></DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
         <Button x:Name="BackButton" Grid.Row="1" 
                 Content="Назад" HorizontalAlignment="Center"
                 Click="BackButton_Click"></Button>
-
     </Grid>
 </Page>

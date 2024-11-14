@@ -21,7 +21,7 @@ namespace POlMaster.Data
         public string EmailOfPartner { get; set; }
         public string PhoneOfPartner { get; set; }
         public int IdAdress { get; set; }
-        public long INN { get; set; }
+        public Nullable<long> INN { get; set; }
         public int Reiting { get; set; }
     
         public virtual Adress Adress { get; set; }
